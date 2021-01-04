@@ -12,7 +12,9 @@ import {
     Request,
     SearchRequest,
     Source,
-    TagSection
+    SourceTag,
+    TagSection,
+    TagType
 } from "paperback-extensions-common"
 
 const MF_DOMAIN = 'https://fanfox.net'
@@ -24,7 +26,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.2.6' }
+    get version(): string { return '1.2.61' }
 
     get name(): string { return 'MangaFox' }
 
@@ -39,6 +41,8 @@ export class MangaFox extends Source {
     get hentaiSource(): boolean {
         return false
     }
+
+    get sourceTags(): SourceTag[] { return [ {text: "Buggy", type: TagType.RED}] }
 
     get rateLimit(): Number {
         return 2
