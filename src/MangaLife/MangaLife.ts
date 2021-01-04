@@ -9,7 +9,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.1' }
+  get version(): string { return '1.1.2' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -46,17 +46,15 @@ export class MangaLife extends Source {
   getMangaDetails(data: any, metadata: any): Manga[] {
     let manga: Manga[] = []
     let $ = this.cheerio.load(data)
+    let json = $('[type=application\\/ld\\+json]').html()?.replace(/\t*\n*/g, '') ?? ''
 
     // this is only because they added some really jank alternate titles and didn't propely string escape
-    let jsonWithoutAlternateName = ($('[type=application\\/ld\\+json]')
-      .html()?.replace(/\t*\n*/g, '') ?? '')
-      .replace(/"alternateName".*?],/g, '');
-    let alternateNames = (/"alternateName": \[(.*?)\]/.exec($('[type=application\\/ld\\+json]')
-      .html()?.replace(/\t*\n*/g, '') ?? '') ?? [])[1]
+    let jsonWithoutAlternateName = json.replace(/"alternateName".*?],/g, '');
+    let alternateNames = (/"alternateName": \[(.*?)\]/.exec(json) ?? [])[1]
       .replace(/\"/g, '')
       .split(',')
-    let json = JSON.parse(jsonWithoutAlternateName)
-    let entity = json.mainEntity
+    let parsedJson = JSON.parse(jsonWithoutAlternateName)
+    let entity = parsedJson.mainEntity
     let info = $('.row')
     let imgSource = ($('.ImgHolder').html()?.match(/src="(.*)\//) ?? [])[1];
     if (imgSource !== ML_IMAGE_DOMAIN)

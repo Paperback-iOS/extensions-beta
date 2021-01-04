@@ -8,7 +8,7 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.3.0' }
+  get version(): string { return '1.3.1' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -47,8 +47,15 @@ export class Mangasee extends Source {
   getMangaDetails(data: any, metadata: any): Manga[] {
     let manga: Manga[] = []
     let $ = this.cheerio.load(data)
-    let json = JSON.parse($('[type=application\\/ld\\+json]').html()?.replace(/\t*\n*/g, '') ?? '')
-    let entity = json.mainEntity
+    let json = $('[type=application\\/ld\\+json]').html()?.replace(/\t*\n*/g, '') ?? ''
+
+    // this is only because they added some really jank alternate titles and didn't propely string escape
+    let jsonWithoutAlternateName = json.replace(/"alternateName".*?],/g, '');
+    let alternateNames = (/"alternateName": \[(.*?)\]/.exec(json) ?? [])[1]
+      .replace(/\"/g, '')
+      .split(',')
+    let parsedJson = JSON.parse(jsonWithoutAlternateName)
+    let entity = parsedJson.mainEntity
     let info = $('.row')
     let imgSource = ($('.ImgHolder').html()?.match(/src="(.*)\//) ?? [])[1];
     if (imgSource !== MS_IMAGE_DOMAIN)
@@ -57,7 +64,7 @@ export class Mangasee extends Source {
     let title = $('h1', info).first().text() ?? ''
     let titles = [title]
     let author = entity.author[0]
-    titles = titles.concat(entity.alternateName)
+    titles = titles.concat(alternateNames)
     let follows = Number(($.root().html()?.match(/vm.NumSubs = (.*);/) ?? [])[1])
 
     let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
