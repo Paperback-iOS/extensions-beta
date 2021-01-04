@@ -486,7 +486,7 @@ class MangaFox extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.6'; }
+    get version() { return '1.2.61'; }
     get name() { return 'MangaFox'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Sirus'; }
@@ -495,6 +495,7 @@ class MangaFox extends paperback_extensions_common_1.Source {
     get hentaiSource() {
         return false;
     }
+    get sourceTags() { return [{ text: "Buggy", type: paperback_extensions_common_1.TagType.RED }]; }
     get rateLimit() {
         return 2;
     }
