@@ -9,7 +9,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.2' }
+  get version(): string { return '1.1.3' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -171,8 +171,13 @@ export class MangaLife extends Source {
   }
 
   getChapterDetails(data: any, metadata: any): ChapterDetails {
+
+    let matchedPath = data.match(/vm.CurPathName = (.*);/)?.[1]
+    if(!matchedPath) {
+        matchedPath = data.match(/vm.CurPathNames = (.*);/)?.[1]
+    }
+
     let pages: string[] = []
-    let pathName = JSON.parse((data.match(/vm.CurPathName = (.*);/) ?? [])[1])
     let chapterInfo = JSON.parse((data.match(/vm.CurChapter = (.*);/) ?? [])[1])
     let pageNum = Number(chapterInfo.Page)
 
@@ -183,7 +188,7 @@ export class MangaLife extends Source {
     for (let i = 0; i < pageNum; i++) {
       let s = '000' + (i + 1)
       let page = s.substr(s.length - 3)
-      pages.push(`https://${pathName}/manga/${metadata.mangaId}/${chapterInfo.Directory == '' ? '' : chapterInfo.Directory + '/'}${chapterImage}-${page}.png`)
+      pages.push(`https://${matchedPath}/manga/${metadata.mangaId}/${chapterInfo.Directory == '' ? '' : chapterInfo.Directory + '/'}${chapterImage}-${page}.png`)
     }
 
     let chapterDetails = createChapterDetails({
