@@ -486,7 +486,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.1.2'; }
+    get version() { return '1.1.3'; }
     get name() { return 'Manga4Life'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -635,10 +635,13 @@ class MangaLife extends paperback_extensions_common_1.Source {
         });
     }
     getChapterDetails(data, metadata) {
-        var _a, _b;
+        var _a, _b, _c;
+        let matchedPath = (_a = data.match(/vm.CurPathName = (.*);/)) === null || _a === void 0 ? void 0 : _a[1];
+        if (!matchedPath) {
+            matchedPath = (_b = data.match(/vm.CurPathNames = (.*);/)) === null || _b === void 0 ? void 0 : _b[1];
+        }
         let pages = [];
-        let pathName = JSON.parse(((_a = data.match(/vm.CurPathName = (.*);/)) !== null && _a !== void 0 ? _a : [])[1]);
-        let chapterInfo = JSON.parse(((_b = data.match(/vm.CurChapter = (.*);/)) !== null && _b !== void 0 ? _b : [])[1]);
+        let chapterInfo = JSON.parse(((_c = data.match(/vm.CurChapter = (.*);/)) !== null && _c !== void 0 ? _c : [])[1]);
         let pageNum = Number(chapterInfo.Page);
         let chapter = chapterInfo.Chapter.slice(1, -1);
         let odd = chapterInfo.Chapter[chapterInfo.Chapter.length - 1];
@@ -646,7 +649,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
         for (let i = 0; i < pageNum; i++) {
             let s = '000' + (i + 1);
             let page = s.substr(s.length - 3);
-            pages.push(`https://${pathName}/manga/${metadata.mangaId}/${chapterInfo.Directory == '' ? '' : chapterInfo.Directory + '/'}${chapterImage}-${page}.png`);
+            pages.push(`https://${matchedPath}/manga/${metadata.mangaId}/${chapterInfo.Directory == '' ? '' : chapterInfo.Directory + '/'}${chapterImage}-${page}.png`);
         }
         let chapterDetails = createChapterDetails({
             id: metadata.chapterId,
