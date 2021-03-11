@@ -172,10 +172,9 @@ export class MangaLife extends Source {
 
   getChapterDetails(data: any, metadata: any): ChapterDetails {
 
-    let matchedPath = data.match(/vm.CurPathName = (.*);/)?.[1]
-    if(!matchedPath) {
-        matchedPath = data.match(/vm.CurPathNames = (.*);/)?.[1]
-    }
+    // Nah, we are not gonna give up
+    const variableName = data.match(/ng-src="https:\/\/{{([a-zA-Z0-9.]+)}}\/manga\/.+\.png/)?.[1];
+    const matchedPath = data.match(new RegExp(`${variableName} = "(.*)";`))?.[1];
 
     let pages: string[] = []
     let chapterInfo = JSON.parse((data.match(/vm.CurChapter = (.*);/) ?? [])[1])
