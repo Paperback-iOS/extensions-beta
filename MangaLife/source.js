@@ -636,10 +636,9 @@ class MangaLife extends paperback_extensions_common_1.Source {
     }
     getChapterDetails(data, metadata) {
         var _a, _b, _c;
-        let matchedPath = (_a = data.match(/vm.CurPathName = (.*);/)) === null || _a === void 0 ? void 0 : _a[1];
-        if (!matchedPath) {
-            matchedPath = (_b = data.match(/vm.CurPathNames = (.*);/)) === null || _b === void 0 ? void 0 : _b[1];
-        }
+        // Nah, we are not gonna give up
+        const variableName = (_a = data.match(/ng-src="https:\/\/{{([a-zA-Z0-9.]+)}}\/manga\/.+\.png/)) === null || _a === void 0 ? void 0 : _a[1];
+        const matchedPath = (_b = data.match(new RegExp(`${variableName} = "(.*)";`))) === null || _b === void 0 ? void 0 : _b[1];
         let pages = [];
         let chapterInfo = JSON.parse(((_c = data.match(/vm.CurChapter = (.*);/)) !== null && _c !== void 0 ? _c : [])[1]);
         let pageNum = Number(chapterInfo.Page);
